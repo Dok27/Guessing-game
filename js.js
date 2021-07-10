@@ -10,7 +10,6 @@ let words = [
   "девять",
   "десять",
 ];
-let count = 0;
 
 // Выбираем случайное слово
 let pickWord = function () {
@@ -26,11 +25,13 @@ let setupAnswerArray = function (word) {
 };
 // Показываем состояние игры
 let showPlayerProgress = function (answerArray) {
-  return alert(answerArray.join(" "));
+  return alert(answerArray.join(" ") + `  Осталось попыток:  ${count}`);
 };
 // Запрашиваем вариант ответа
 let getGuess = function () {
-  return (guess = prompt("Угадайте букву").toLowerCase());
+  return (guess = prompt(
+    `Угадайте букву. Осталось попыток:  ${count}`
+  ).toLowerCase());
 };
 // Обновляем состояние игры
 let updateGameState = function (guess, word, answerArray) {
@@ -39,18 +40,23 @@ let updateGameState = function (guess, word, answerArray) {
     if (word[j] === guess && answerArray[j] === "_") {
       answerArray[j] = guess;
       countLetters++;
-      count--;
-    } 
+      count++;
+    }
   }
   return countLetters;
 };
 
 let word = pickWord();
+// Отображение ответа
+let showAnswer = function (word) {
+  return alert(`Было загадано слово: ${word}`);
+};
+let count = word.length + 5;
 let answerArray = setupAnswerArray(word);
 // Сколько букв осталось угадать
 let remainingLetters = word.length;
 // Игровой цикл
-while (remainingLetters > 0 && count < word.length + 4) {
+while (remainingLetters > 0) {
   showPlayerProgress(answerArray);
   let guess = getGuess();
   if (guess === null) {
@@ -60,19 +66,17 @@ while (remainingLetters > 0 && count < word.length + 4) {
     alert("Введите 1 букву");
   } else {
     let correctGuesses = updateGameState(guess, word, answerArray);
-    count++;
     remainingLetters -= correctGuesses;
+    count--;
   }
-  // Считаем количество попыток
-  if (count == word.length + 4) {
+  if (count === 0) {
+    // Считаем количество попыток
     alert("Попытки кончились");
-    alert("Было загадано слово " + word);
+    showAnswer(word);
     break;
   }
-  // Конец игрового цикла
 }
-// Отображение ответа
-let showAnswerAndCongratulatePlayer = function (answerArray) {
-  return alert("Отлично! Было загадано слово " + answerArray.join(""));
-};
-showAnswerAndCongratulatePlayer(answerArray);
+// Конец игрового цикла
+if (remainingLetters === 0) {
+  showAnswer(answerArray.join(""));
+}
